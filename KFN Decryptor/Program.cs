@@ -2,6 +2,9 @@
 using System;
 //using System.Globalization;
 using System.Reflection;
+using System.Text.RegularExpressions;
+using KFNLibrary;
+using System.IO;
 
 namespace KFN_Decryptor
 {
@@ -10,6 +13,7 @@ namespace KFN_Decryptor
         static readonly AssemblyName program = Assembly.GetExecutingAssembly().GetName();
         static bool createNew = false;
         static bool recurse = false;
+        static KFNLibrary.KFN KFN;
 
         static void Main(string[] args)
         {
@@ -89,9 +93,24 @@ namespace KFN_Decryptor
 
         }
 
-        static void ReadFile(string filePath)
+        static KFN ReadFile(string filePath)
         {
-
+            if (!Regex.IsMatch(filePath, @"[\/]"))
+            {
+                filePath = Directory.GetCurrentDirectory() + "\\" + filePath;
+            }
+            if (!File.Exists(filePath))
+            {
+                // error
+                return null;
+            }
+            KFN fileData = new KFN(filePath);
+            if (fileData == null)
+            {
+                // error
+                return null;
+            }
+            return fileData;
         }
     }
 }
